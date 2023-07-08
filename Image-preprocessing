@@ -1,0 +1,49 @@
+#Image Preprocessing
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+
+def binarize_image(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    return binary
+
+def detect_contours(image):
+    contours, _ = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    return contours
+
+def segment_lines(image, contours):
+    line_images = []
+    for contour in contours:
+        x, y, w, h = cv2.boundingRect(contour)
+        line_image = image[y:y+h, x:x+w]
+        line_images.append(line_image)
+    return line_images
+
+def compute_histogram(image):
+    histogram = cv2.calcHist([image], [0], None, [256], [0, 256])
+    return histogram
+
+# Load the input image
+image = cv2.imread('handwriting.png')  # Replace 'handwriting.png' with your input image path
+
+# Binarize the image using Otsu's thresholding
+binary_image = binarize_image(image)
+
+# Detect contours in the binary image
+contours = detect_contours(binary_image)
+
+# Segment lines from the original image based on contours
+line_images = segment_lines(image, contours)
+
+# Compute and plot the histogram for each line
+for i, line_image in enumerate(line_images):
+    gray_line = cv2.cvtColor(line_image, cv2.COLOR_BGR2GRAY)
+    histogram = compute_histogram(gray_line)
+    
+    plt.figure()
+    plt.title(f"Line {i+1} Histogram")
+    plt.plot(histogram)
+    plt.xlabel("Pixel Intensity")
+    plt.ylabel("Frequency")
+    plt.show()
