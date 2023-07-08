@@ -1,0 +1,45 @@
+#Graph-based Representation
+import math
+import networkx as nx
+
+def connect(KPs):
+    V = set()
+    E = set()
+
+    for KP in KPs:
+        for (x, y) in KP:
+            V.add((x, y))
+    
+    for u in V:
+        for v in V:
+            if u != v and are_adjacent(u, v):
+                E.add((u, v))
+    
+    g = nx.DiGraph()
+    g.add_nodes_from(V)
+    g.add_edges_from(E)
+
+    return g
+
+def are_adjacent(u, v):
+    # Implement your logic to check if KPs represented by u and v are adjacent
+    # For example, you can use Euclidean distance and a threshold to determine adjacency
+    distance = calculate_euclidean_distance(u, v)
+    adjacency_threshold = 10.0  # Adjust the threshold based on your requirements
+    return distance <= adjacency_threshold
+
+def calculate_euclidean_distance(u, v):
+    # Implement your logic to calculate the Euclidean distance between two points u and v
+    distance = math.sqrt((v[0] - u[0]) ** 2 + (v[1] - u[1]) ** 2)
+    return distance
+
+# Example usage
+KPs = [
+    [(10, 20), (30, 40), (50, 60)],  # Replace with actual keypoints data
+    [(70, 80), (90, 100), (110, 120)],  # Replace with actual keypoints data
+    ...
+]
+
+graph = connect(KPs)
+print("Graph nodes:", graph.nodes)
+print("Graph edges:", graph.edges)
