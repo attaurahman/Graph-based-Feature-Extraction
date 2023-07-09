@@ -1,0 +1,37 @@
+#Ensemble Learnig for Classification
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import VotingClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+from sklearn.datasets import fetch_openml
+
+# Load the IAM Handwriting Dataset
+dataset = fetch_openml(name='IAM Handwriting')
+X, y = dataset.data, dataset.target
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Initialize individual classifiers
+tree_clf = DecisionTreeClassifier(random_state=42)
+knn_clf = KNeighborsClassifier()
+svm_clf = SVC()
+
+# Create the ensemble classifier
+ensemble_clf = VotingClassifier(
+    estimators=[('tree', tree_clf), ('knn', knn_clf), ('svm', svm_clf)],
+    voting='hard'
+)
+
+# Train the ensemble classifier
+ensemble_clf.fit(X_train, y_train)
+
+# Make predictions on the testing set
+ensemble_predictions = ensemble_clf.predict(X_test)
+
+# Calculate the accuracy of the ensemble classifier
+ensemble_accuracy = accuracy_score(y_test, ensemble_predictions)
+print("Ensemble Accuracy:", ensemble_accuracy)
